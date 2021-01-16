@@ -1,0 +1,91 @@
+<!-- {% block title %}Home{% endblock %} -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+    .cookie-banner {
+    position: fixed;
+    bottom: 40px;
+    left: 10%;
+    right: 10%;
+    width: 80%;
+    padding: 5px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #eee;
+    border-radius: 5px;
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+    }
+    .close {
+    height: 20px;
+    background-color: #777;
+    border: none;
+    color: white;
+    border-radius: 2px;
+    cursor: pointer;
+    }
+</style>
+
+<div class="results" style="display: none;"></div>
+
+{% if data %}
+    <h1>Memes</h1>
+{% endif %}    
+
+{% for meme in data %}
+    <div>
+        <a href="{{ meme.url }}" target="_blank"><img src="{{ meme.url }}" height="200" width="200"/></a>
+        <p>by: {{meme.name}}</p>
+    </div>
+{% endfor %}    
+<div class='cookie-banner' style='display: none'>
+    <p>
+        By using our website, you agree to our cookie policy
+      </p>
+    <div>
+      <input type="button" value="close" onclick="coockieConsent('False')">
+      <input type="button" value="accept" onclick="coockieConsent('True')">
+    </div>    
+</div>
+
+
+<script>
+    var coockie_consent = "{{coockie_consent}}";
+    if(coockie_consent != 'True'){
+        $('.cookie-banner').delay(500).fadeIn();
+    }
+    function getCookie(c_name) {
+        if(document.cookie.length > 0) {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if(c_start != -1) {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if(c_end == -1) c_end = document.cookie.length;
+                return unescape(document.cookie.substring(c_start,c_end));
+            }
+        }
+        return "";
+    }
+
+    function coockieConsent(param){
+        $.ajax({
+            url: "/home",
+            type: "POST",
+            cache: false,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            data: {"coockie_consent": param},
+            success: function(data){
+                if(data.coockie_consent){
+                    window.location = 'home';
+                }
+                else{
+                    $(".results").html("Sorry you did not accept coockies. Now you will be logged out.");
+                    $(".results").show();
+                    setTimeout(function(){ window.location = 'logout'; }, 1000);
+                }
+            }
+        });
+    }
+    
+</script>
