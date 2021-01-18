@@ -2,8 +2,10 @@ from django.shortcuts import render, HttpResponse, redirect
 from .forms import SignUpForm
 import json
 import requests
+from django.contrib.auth.decorators import login_required
 
 
+@login_required(login_url='/')
 def home(request):
     user = request.user
     data = []
