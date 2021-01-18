@@ -1,5 +1,3 @@
-## Internal Codal Project Management System
-
 #### Pre-requisites
     Python 3.7
     sqlite3
